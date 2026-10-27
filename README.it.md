@@ -28,7 +28,7 @@ Lavora osservando quello che fai già: non devi scrivere nessun filtro.
 - **Modalità solo suggerimenti.** Wingman registra cosa farebbe senza toccare nulla.
 - **Non invia mai niente.** Non può inviare, inoltrare o rispondere. Un'istruzione malevola nascosta in una mail (prompt injection) può al massimo far scegliere una delle tue regole esistenti.
 - **La chiave API resta in locale.** È salvata nello storage locale dell'estensione e le richieste vanno direttamente a `api.anthropic.com`.
-- **Privacy.** Per imparare escono dal tuo computer solo mittenti, oggetti senza numeri e conteggi. Il testo di una mail (al massimo 800 caratteri) viene inviato solo per le mail automatiche che nessuna regola copre, e solo se l'opzione è attiva.
+- **Privacy.** Nulla esce dal tuo computer finché non dai il consenso esplicito nella pagina delle opzioni, e puoi revocarlo in qualsiasi momento. Dopo, per imparare vengono inviati solo mittenti, oggetti senza numeri, conteggi e nomi delle cartelle. Il testo di una mail (al massimo 800 caratteri) viene inviato solo per le mail automatiche che nessuna regola copre, e solo se l'opzione è attiva. Vedi l'[informativa privacy](PRIVACY.it.md).
 
 ## Build e installazione
 
@@ -41,7 +41,9 @@ npm run build   # crea dist/ e wingman.xpi
 In Thunderbird vai su *Strumenti → Componenti aggiuntivi e temi → ⚙ → Installa componente aggiuntivo da file…* e scegli `wingman.xpi`.
 Per lo sviluppo usa *Strumenti → Strumenti per sviluppatori → Debug componenti aggiuntivi → Carica componente aggiuntivo temporaneo* e scegli `dist/manifest.json`.
 
-La pagina delle opzioni si apre da sola al primo avvio, oppure dal pulsante nella barra. Inserisci la tua chiave API di Anthropic e premi **Analizza e impara ora**. Per i primi giorni la **modalità solo suggerimenti** è un buon modo per controllare cosa farebbe Wingman.
+La pagina delle opzioni si apre da sola al primo avvio, oppure dal pulsante nella barra. Accetta il riquadro del consenso, inserisci la tua chiave API di Anthropic e premi **Analizza e impara ora**. Per i primi giorni la **modalità solo suggerimenti** è un buon modo per controllare cosa farebbe Wingman.
+
+Per pubblicare su addons.thunderbird.net, fai commit di tutto e lancia `npm run source`: crea `wingman-source.zip`, l'archivio dei sorgenti da cui i revisori ricostruiscono il pacchetto. Testi della scheda, note per i revisori, icona e screenshot sono in [`store/`](store/LISTING.md).
 
 ## Modelli e costi
 
@@ -59,6 +61,7 @@ Wingman usa l'API di Anthropic; il modello predefinito è Claude Opus 5.5. Le re
 | `src/llm.js` | Chiamate API al modello con output strutturato |
 | `options/` | Pagina di impostazioni, regole e attività |
 | `test/` | Test in Node con Thunderbird e API simulati |
+| `store/` | Testi della scheda, note per i revisori, icona e screenshot per addons.thunderbird.net |
 
 ## Licenza
 

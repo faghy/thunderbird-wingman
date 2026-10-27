@@ -28,7 +28,7 @@ It works by watching what you already do. You don't write any filters.
 - **Suggest-only mode.** Wingman logs what it would do without touching anything.
 - **It never sends anything.** It cannot send, forward or reply. A prompt injection hidden in an email can at most pick one of your existing rules.
 - **Your API key stays local.** It lives in the add-on's local storage, and requests go straight to `api.anthropic.com`.
-- **Privacy.** For learning, only senders, subjects with numbers removed, and counts leave your machine. Message text (at most 800 characters) is sent only for automated mail that no rule covers, and only if that option is turned on.
+- **Privacy.** Nothing leaves your machine until you give explicit consent in the options page, and you can withdraw it at any time. After that, learning sends only senders, subjects with numbers removed, counts and folder names. Message text (at most 800 characters) is sent only for automated mail that no rule covers, and only if that option is turned on. See the [privacy policy](PRIVACY.md).
 
 ## Build and install
 
@@ -41,7 +41,9 @@ npm run build   # produces dist/ and wingman.xpi
 In Thunderbird, go to *Tools → Add-ons and Themes → ⚙ → Install Add-on From File…* and pick `wingman.xpi`.
 For development, use *Tools → Developer Tools → Debug Add-ons → Load Temporary Add-on* and pick `dist/manifest.json`.
 
-The options page opens on first run, or from the toolbar button. Enter your Anthropic API key and press **Analizza e impara ora** ("Analyze and learn now"; the UI is currently in Italian). For the first few days, **suggest-only mode** is a good way to check what Wingman would do.
+The options page opens on first run, or from the toolbar button. Accept the consent panel, enter your Anthropic API key and press **Analizza e impara ora** ("Analyze and learn now"; the UI is currently in Italian). For the first few days, **suggest-only mode** is a good way to check what Wingman would do.
+
+To publish on addons.thunderbird.net, commit everything and run `npm run source` to produce `wingman-source.zip`, the source archive reviewers rebuild from. The listing text, reviewer notes, icon and screenshots are in [`store/`](store/LISTING.md).
 
 ## Models and cost
 
@@ -59,6 +61,7 @@ Wingman uses the Anthropic API; the default model is Claude Opus 5.5. Rules are 
 | `src/llm.js` | Model API calls with structured output |
 | `options/` | Settings, rules and activity page |
 | `test/` | Node tests with Thunderbird and the API mocked |
+| `store/` | Listing text, reviewer notes, icon and screenshots for addons.thunderbird.net |
 
 ## License
 

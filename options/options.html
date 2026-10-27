@@ -12,6 +12,21 @@
     <p class="muted">Impara come gestisci le mail automatiche e transazionali e lo rifà al posto tuo.</p>
   </header>
 
+  <section id="consent" class="consent" hidden>
+    <h2>Prima di usare l'AI</h2>
+    <p>Per imparare le regole e riconoscere le mail nuove, Wingman invia alcuni dati delle tue mail al servizio di intelligenza artificiale di Anthropic (api.anthropic.com), usando la tua chiave API:</p>
+    <ul>
+      <li><strong>Per imparare:</strong> indirizzi dei mittenti, oggetti (con i numeri rimossi), quante mail hai spostato, archiviato, cestinato o etichettato, e i nomi delle caselle, delle cartelle e delle etichette usate.</li>
+      <li><strong>Per le mail nuove</strong> automatiche che nessuna regola copre (se l'opzione è attiva): mittente, oggetto e i primi 800 caratteri del testo.</li>
+    </ul>
+    <p>Nient'altro lascia il tuo computer: niente allegati, destinatari, mail scritte da persone o dati di altre caselle disattivate. Wingman non ha server propri. I dati sono trattati da Anthropic secondo la sua <a href="https://www.anthropic.com/legal/privacy" target="_blank" rel="noopener">informativa privacy</a> e i termini della tua chiave API. Puoi revocare il consenso in qualsiasi momento dalle impostazioni.</p>
+    <p class="muted">Senza consenso Wingman continua a funzionare in locale: aggiorna le statistiche e applica le regole che hai già.</p>
+    <div class="row">
+      <button id="consent-yes" class="primary">Accetto, attiva l'AI</button>
+      <button id="consent-no">Non ora</button>
+    </div>
+  </section>
+
   <section>
     <h2>Stato</h2>
     <div id="status" class="status"></div>
@@ -79,7 +94,7 @@
         <span id="saved" class="muted"></span>
       </div>
     </form>
-    <p class="muted">Privacy: per imparare vengono inviati all'AI solo mittenti, oggetti (con i numeri rimossi) e conteggi. Il testo di una mail (primi 800 caratteri) viene inviato solo se è una mail automatica non coperta da regole e l'opzione AI è attiva.</p>
+    <div id="consent-status" class="row"></div>
     <button id="reset" class="danger">Azzera tutto ciò che è stato imparato</button>
   </section>
 

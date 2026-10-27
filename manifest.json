@@ -2,11 +2,16 @@
   "manifest_version": 2,
   "name": "Wingman",
   "description": "Impara come gestisci le mail transazionali (spostare, archiviare, eliminare, etichettare) e lo fa in automatico con l'AI.",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "browser_specific_settings": {
     "gecko": {
       "id": "wingman@tabularis.dev",
-      "strict_min_version": "140.0"
+      "strict_min_version": "140.0",
+      "data_collection_permissions": {
+        "required": [
+          "personalCommunications"
+        ]
+      }
     }
   },
   "background": {
@@ -31,6 +36,7 @@
     "messagesMove",
     "messagesDelete",
     "messagesUpdate",
+    "sensitiveDataUpload",
     "storage",
     "unlimitedStorage",
     "https://api.anthropic.com/*"

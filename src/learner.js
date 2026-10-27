@@ -9,7 +9,7 @@
 import { folderKind, iterateMessages, listAccounts, listFolders, listTags } from "./mail.js";
 import { structuredCall } from "./llm.js";
 import { normalizeRule, ruleId, ruleStats, toObservation } from "./rules.js";
-import { accountEnabled, save, state } from "./state.js";
+import { accountEnabled, aiEnabled, save, state } from "./state.js";
 
 const SCANNED_KINDS = new Set(["inbox", "trash", "archives", "normal"]);
 const MAX_SENDERS = 150;
@@ -136,6 +136,7 @@ Every rule is then checked against the person's full history and discarded unles
 export async function learnRules() {
   const { apiKey, model, minSupport, minConfidence, autoActivate, autoActivateDelete } = state.settings;
   if (!apiKey) throw new Error("Imposta la chiave API nelle opzioni");
+  if (!aiEnabled()) throw new Error("Per usare l'AI devi prima dare il consenso all'invio dei dati");
 
   const accounts = (await listAccounts()).filter((a) => accountEnabled(a.id));
   const folderNames = {};

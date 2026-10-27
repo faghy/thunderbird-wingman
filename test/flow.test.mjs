@@ -70,7 +70,14 @@ globalThis.fetch = async (url, init) => {
 await import(root + "background.js");
 const call = (cmd, extra = {}) => events.msg({ cmd, ...extra });
 
-await call("saveSettings", { settings: { apiKey: "sk-test" } });
+// Without consent nothing is sent, and the settings form cannot grant it.
+await call("saveSettings", { settings: { apiKey: "sk-test", aiConsentAt: Date.now(), aiConsentVersion: 1 } });
+await call("learn");
+for (let i = 0; i < 50 && (await call("getState")).result.busy; i++) await new Promise((r) => setTimeout(r, 20));
+assert.equal(llmRequests.length, 0, "no request before consent");
+assert.match((await call("getState")).result.meta.lastError, /consenso/);
+await call("setConsent", { granted: true });
+
 nextAnswer = () => ({ rules: [
   { description: "Bollette Enel in Fatture", category: "Fatture", fromAddresses: ["fatture@enel.it"], fromDomains: [], subjectKeywords: [], accountId: "a1", action: "move", folderPath: "/INBOX/Fatture", tagKey: "" },
   { description: "Promo shop archiviate", category: "Promo", fromAddresses: ["news@shop.it"], fromDomains: [], subjectKeywords: [], accountId: "", action: "archive", folderPath: "", tagKey: "" },

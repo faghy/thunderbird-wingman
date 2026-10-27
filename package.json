@@ -1,12 +1,13 @@
 {
   "name": "thunderbird-wingman",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "type": "module",
   "scripts": {
     "build": "node build.mjs",
     "lint": "npx --yes web-ext lint --source-dir dist",
-    "test": "node test/rules.test.mjs && node test/flow.test.mjs"
+    "test": "node test/rules.test.mjs && node test/flow.test.mjs",
+    "source": "git archive --format=zip -o wingman-source.zip HEAD"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^1.3.0"
@@ -20,5 +21,8 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/faghy/thunderbird-wingman.git"
+  },
+  "engines": {
+    "node": ">=20"
   }
 }

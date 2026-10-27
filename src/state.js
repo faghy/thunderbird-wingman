@@ -24,7 +24,12 @@ export const DEFAULT_SETTINGS = {
   aiMinConfidence: 0.85,
   maxAiCallsPerHour: 60,
   learnEveryHours: 24,
+  aiConsentAt: 0, // when the user agreed to send mail data to the AI service; 0 = no consent
+  aiConsentVersion: 0,
 };
+
+// Bump when the data sent to the AI service changes: everyone is asked again.
+export const CONSENT_VERSION = 1;
 
 const DEFAULTS = {
   settings: DEFAULT_SETTINGS,
@@ -73,6 +78,16 @@ export function rememberAgentHid(hid) {
     for (const [old] of entries.slice(0, entries.length - AGENT_HIDS_LIMIT)) delete state.agentHids[old];
   }
   save("agentHids");
+}
+
+export function aiConsented() {
+  const { aiConsentAt, aiConsentVersion } = state.settings;
+  return !!aiConsentAt && aiConsentVersion === CONSENT_VERSION;
+}
+
+// Nothing derived from mail leaves the machine without the user's consent and a key.
+export function aiEnabled() {
+  return !!state.settings.apiKey && aiConsented();
 }
 
 export function accountEnabled(accountId) {

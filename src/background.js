@@ -10,7 +10,7 @@ import { applySuggestion, handleDeleted, handleMoved, handleNewMail, handleUpdat
 import { checkApiKey, describeApiError } from "./llm.js";
 import { learnRules, refreshRuleStats, scanHistory } from "./learner.js";
 import { listAccounts, listFolders, listTags } from "./mail.js";
-import { DEFAULT_SETTINGS, init, save, state } from "./state.js";
+import { CONSENT_VERSION, DEFAULT_SETTINGS, aiConsented, aiEnabled, init, save, state } from "./state.js";
 
 const ready = init();
 const withState = (fn) => async (...args) => {
@@ -54,8 +54,8 @@ async function runLearning({ withAI }) {
 
 async function maybeLearn() {
   await ready;
-  const { apiKey, learnEveryHours } = state.settings;
-  if (busy || !apiKey) return;
+  const { learnEveryHours } = state.settings;
+  if (busy || !aiEnabled()) return;
   if (Date.now() - (state.meta.lastLearnAt || 0) < learnEveryHours * 3600 * 1000) return;
   await runLearning({ withAI: true }).catch(() => {});
 }
@@ -83,13 +83,20 @@ const commands = {
       log: state.log.slice(0, 150),
       meta: state.meta,
       busy,
+      consented: aiConsented(),
       observationCount: Object.keys(state.observations).length,
       ...(await describeMailboxes()),
     };
   },
   async saveSettings({ settings }) {
-    const allowed = Object.keys(DEFAULT_SETTINGS);
+    // Consent only changes through setConsent, never through the settings form.
+    const allowed = Object.keys(DEFAULT_SETTINGS).filter((key) => !key.startsWith("aiConsent"));
     for (const key of allowed) if (key in settings) state.settings[key] = settings[key];
+    save("settings");
+  },
+  async setConsent({ granted }) {
+    state.settings.aiConsentAt = granted ? Date.now() : 0;
+    state.settings.aiConsentVersion = granted ? CONSENT_VERSION : 0;
     save("settings");
   },
   async checkApiKey({ apiKey, model }) {

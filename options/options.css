@@ -73,3 +73,7 @@ label.check { display: flex; gap: 8px; align-items: flex-start; }
 fieldset { border: 1px solid var(--line); border-radius: 8px; margin: 10px 0; }
 .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 0 16px; }
 details { margin-top: 8px; }
+.consent { background: var(--panel); border: 1px solid var(--accent); border-radius: 8px; padding: 12px 16px; }
+.consent ul { padding-left: 20px; }
+.consent a { color: var(--accent); }
+#consent-status { margin: 12px 0; }

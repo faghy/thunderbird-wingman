@@ -14,6 +14,7 @@ const RULE_STATUS = { active: "attiva", proposed: "proposta", disabled: "disatti
 const LOG_STATUS = { applied: "applicata", suggested: "suggerita", undone: "annullata", reverted: "ripristinata da te", error: "errore" };
 
 let view = null;
+let consentDismissed = false;
 let pollTimer = null;
 
 async function send(cmd, payload = {}) {
@@ -65,14 +66,15 @@ function action(label, fn, cls = "small") {
 }
 
 function renderStatus() {
-  const { meta, busy, observationCount, settings } = view;
+  const { meta, busy, observationCount, settings, consented } = view;
   const box = document.getElementById("status");
-  box.replaceChildren(
+  box.replaceChildren(...[
     el("div", {}, busy ? `In corso: ${meta.progress || "analisi…"}` : `Messaggi osservati: ${observationCount}. Ultima analisi AI: ${formatDate(meta.lastLearnAt)}.`),
     !settings.apiKey && el("div", { class: "error" }, "Inserisci la chiave API nelle impostazioni per abilitare l'apprendimento."),
+    !consented && el("div", { class: "error" }, "AI disattivata: manca il consenso all'invio dei dati. Le regole già attive continuano a funzionare."),
     meta.lastError && el("div", { class: "error" }, `Ultimo errore: ${meta.lastError}`),
-  );
-  document.getElementById("learn").disabled = busy || !settings.apiKey;
+  ].filter(Boolean)); // replaceChildren() would print false/undefined
+  document.getElementById("learn").disabled = busy || !settings.apiKey || !consented;
   document.getElementById("scan").disabled = busy;
 
   const report = meta.lastLearn;
@@ -134,6 +136,24 @@ function renderLog() {
   );
 }
 
+function renderConsent() {
+  const { consented } = view;
+  const { aiConsentAt } = view.settings;
+  document.getElementById("consent").hidden = consented || consentDismissed;
+  document.getElementById("consent-status").replaceChildren(
+    consented
+      ? el("span", { class: "muted" }, `Consenso all'invio dei dati all'AI dato il ${formatDate(aiConsentAt)}.`)
+      : el("span", { class: "muted" }, "Nessun consenso all'invio dei dati all'AI: Wingman lavora solo in locale."),
+    consented
+      ? action("Revoca consenso", () => send("setConsent", { granted: false }))
+      : action("Mostra informativa e consenso", async () => {
+          consentDismissed = false;
+          renderConsent();
+          document.getElementById("consent").scrollIntoView();
+        }),
+  );
+}
+
 function renderSettings() {
   const form = document.getElementById("settings");
   if (form.dataset.loaded) return; // don't overwrite what the user is typing
@@ -171,6 +191,7 @@ async function refresh() {
   renderStatus();
   renderRules();
   renderLog();
+  renderConsent();
   renderSettings();
   clearTimeout(pollTimer);
   pollTimer = setTimeout(refresh, view.busy ? 1500 : 10000);
@@ -202,6 +223,16 @@ document.getElementById("learn").addEventListener("click", async () => {
 document.getElementById("scan").addEventListener("click", async () => {
   await send("scan");
   await refresh();
+});
+
+document.getElementById("consent-yes").addEventListener("click", async () => {
+  await send("setConsent", { granted: true });
+  await refresh();
+});
+
+document.getElementById("consent-no").addEventListener("click", () => {
+  consentDismissed = true;
+  renderConsent();
 });
 
 document.getElementById("reset").addEventListener("click", async () => {

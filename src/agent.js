@@ -12,7 +12,7 @@ import {
 } from "./mail.js";
 import { structuredCall } from "./llm.js";
 import { FOLDER_ACTIONS, pickRules, toObservation } from "./rules.js";
-import { accountEnabled, pushLog, rememberAgentHid, save, state } from "./state.js";
+import { accountEnabled, aiEnabled, pushLog, rememberAgentHid, save, state } from "./state.js";
 
 // Our own moves and tag changes fire the same events as the user's. Each
 // agent action expects exactly one event, which it consumes, so a user who
@@ -72,8 +72,8 @@ async function processMessage(message, folder) {
 }
 
 function aiAllowed() {
-  const { aiForUnmatched, apiKey, maxAiCallsPerHour } = state.settings;
-  if (!aiForUnmatched || !apiKey) return false;
+  const { aiForUnmatched, maxAiCallsPerHour } = state.settings;
+  if (!aiForUnmatched || !aiEnabled()) return false;
   const hourAgo = Date.now() - 3600 * 1000;
   while (aiCallTimes.length && aiCallTimes[0] < hourAgo) aiCallTimes.shift();
   return aiCallTimes.length < maxAiCallsPerHour;
