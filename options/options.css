@@ -1,0 +1,75 @@
+/* Wingman - Copyright (C) 2026 Faghy
+ * Licensed under the GNU General Public License v3.0 or later. See LICENSE. */
+
+:root {
+  --bg: #ffffff;
+  --fg: #1d1f23;
+  --muted: #6b7079;
+  --line: #e3e5e9;
+  --accent: #2f6fde;
+  --danger: #c4372f;
+  --ok: #2b8a4b;
+  --warn: #b7791f;
+  --panel: #f6f7f9;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #1c1d21;
+    --fg: #e7e8ea;
+    --muted: #9a9ea6;
+    --line: #34363c;
+    --accent: #6b9cf0;
+    --danger: #ef6b62;
+    --ok: #5cc184;
+    --warn: #e0a84a;
+    --panel: #25272c;
+  }
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0 auto;
+  max-width: 1100px;
+  padding: 24px 16px 64px;
+  background: var(--bg);
+  color: var(--fg);
+  font: 14px/1.45 system-ui, sans-serif;
+}
+h1 { margin: 0 0 4px; font-size: 22px; }
+h2 { margin: 0 0 8px; font-size: 16px; }
+section { margin-top: 28px; }
+.muted { color: var(--muted); }
+.row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.status { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; margin-bottom: 10px; }
+.status .error { color: var(--danger); }
+button {
+  font: inherit;
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: 1px solid var(--line);
+  background: var(--panel);
+  color: var(--fg);
+  cursor: pointer;
+}
+button.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+button.danger { color: var(--danger); }
+button.small { padding: 2px 8px; font-size: 12px; }
+button:disabled { opacity: 0.5; cursor: default; }
+table { width: 100%; border-collapse: collapse; }
+th, td { text-align: left; padding: 6px 8px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { color: var(--muted); font-weight: 500; font-size: 12px; }
+td small { color: var(--muted); display: block; }
+.badge { display: inline-block; padding: 1px 8px; border-radius: 10px; font-size: 12px; border: 1px solid currentColor; }
+.badge.active, .badge.applied { color: var(--ok); }
+.badge.proposed, .badge.suggested { color: var(--warn); }
+.badge.disabled, .badge.error, .badge.reverted, .badge.undone { color: var(--muted); }
+.badge.error { color: var(--danger); }
+form label { display: block; margin: 10px 0; }
+form input[type=password], form input[type=number], form select {
+  display: block; width: 100%; max-width: 420px; margin-top: 4px; padding: 6px 8px;
+  border: 1px solid var(--line); border-radius: 6px; background: var(--bg); color: var(--fg); font: inherit;
+}
+form .row input[type=password] { flex: 1; margin: 0; }
+label.check { display: flex; gap: 8px; align-items: flex-start; }
+fieldset { border: 1px solid var(--line); border-radius: 8px; margin: 10px 0; }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 0 16px; }
+details { margin-top: 8px; }

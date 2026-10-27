@@ -1,0 +1,88 @@
+<!doctype html>
+<!-- Wingman - Copyright (C) 2026 Faghy. Licensed under the GNU General Public License v3.0 or later. See LICENSE. -->
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <title>Wingman</title>
+  <link rel="stylesheet" href="options.css">
+</head>
+<body>
+  <header>
+    <h1>Wingman</h1>
+    <p class="muted">Impara come gestisci le mail automatiche e transazionali e lo rifà al posto tuo.</p>
+  </header>
+
+  <section>
+    <h2>Stato</h2>
+    <div id="status" class="status"></div>
+    <div class="row">
+      <button id="learn" class="primary">Analizza e impara ora</button>
+      <button id="scan">Solo aggiorna statistiche (senza AI)</button>
+    </div>
+    <div id="learn-report"></div>
+  </section>
+
+  <section>
+    <h2>Regole imparate</h2>
+    <p class="muted">Le regole nascono dai tuoi comportamenti ripetuti e vengono verificate sul tuo storico. "Proposte" non vengono applicate finché non le attivi.</p>
+    <table>
+      <thead><tr><th>Regola</th><th>Azione</th><th>Storico</th><th>Applicata</th><th>Stato</th><th></th></tr></thead>
+      <tbody id="rules"></tbody>
+    </table>
+  </section>
+
+  <section>
+    <h2>Attività</h2>
+    <table>
+      <thead><tr><th>Quando</th><th>Messaggio</th><th>Azione</th><th>Esito</th><th></th></tr></thead>
+      <tbody id="log"></tbody>
+    </table>
+  </section>
+
+  <section>
+    <h2>Impostazioni</h2>
+    <form id="settings">
+      <label>Chiave API Anthropic
+        <span class="row"><input type="password" name="apiKey" autocomplete="off" placeholder="sk-ant-…"><button type="button" id="check-key">Verifica</button></span>
+      </label>
+      <label>Modello
+        <select name="model">
+          <option value="claude-opus-5-5">Claude Opus 5.5 (più accurato)</option>
+          <option value="claude-sonnet-5-5">Claude Sonnet 5.5</option>
+          <option value="claude-haiku-5-5">Claude Haiku 5.5 (più economico)</option>
+        </select>
+      </label>
+      <label>Modalità
+        <select name="mode">
+          <option value="auto">Automatica: applica le regole attive</option>
+          <option value="suggest">Solo suggerimenti: registra cosa farebbe</option>
+        </select>
+      </label>
+      <fieldset>
+        <legend>Caselle controllate</legend>
+        <div id="accounts"></div>
+      </fieldset>
+      <label class="check"><input type="checkbox" name="autoActivate"> Attiva subito le nuove regole di spostamento, archiviazione ed etichetta</label>
+      <label class="check"><input type="checkbox" name="autoActivateDelete"> Attiva subito anche le regole di eliminazione (cestino)</label>
+      <label class="check"><input type="checkbox" name="aiForUnmatched"> Usa l'AI per le mail automatiche di mittenti non ancora coperti da regole</label>
+      <div class="grid">
+        <label>Giorni di storico da analizzare <input type="number" name="historyDays" min="7" max="3650"></label>
+        <label>Messaggi massimi per cartella <input type="number" name="maxPerFolder" min="50" max="20000"></label>
+        <label>Ripetizioni minime per una regola <input type="number" name="minSupport" min="2" max="100"></label>
+        <label>Coerenza minima (%) <input type="number" name="minConfidence" min="50" max="100" data-percent></label>
+        <label>Confidenza minima AI (%) <input type="number" name="aiMinConfidence" min="50" max="100" data-percent></label>
+        <label>Chiamate AI massime all'ora <input type="number" name="maxAiCallsPerHour" min="0" max="1000"></label>
+        <label>Ri-analizza ogni (ore) <input type="number" name="learnEveryHours" min="1" max="720"></label>
+      </div>
+      <div class="row">
+        <button type="submit" class="primary">Salva</button>
+        <span id="saved" class="muted"></span>
+      </div>
+    </form>
+    <p class="muted">Privacy: per imparare vengono inviati all'AI solo mittenti, oggetti (con i numeri rimossi) e conteggi. Il testo di una mail (primi 800 caratteri) viene inviato solo se è una mail automatica non coperta da regole e l'opzione AI è attiva.</p>
+    <button id="reset" class="danger">Azzera tutto ciò che è stato imparato</button>
+  </section>
+
+  <script src="options.js"></script>
+</body>
+</html>

@@ -1,0 +1,40 @@
+{
+  "manifest_version": 2,
+  "name": "Wingman",
+  "description": "Impara come gestisci le mail transazionali (spostare, archiviare, eliminare, etichettare) e lo fa in automatico con l'AI.",
+  "version": "0.1.0",
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "wingman@tabularis.dev",
+      "strict_min_version": "140.0"
+    }
+  },
+  "background": {
+    "scripts": [
+      "background.js"
+    ]
+  },
+  "options_ui": {
+    "page": "options/options.html",
+    "open_in_tab": true
+  },
+  "browser_action": {
+    "default_title": "Wingman",
+    "default_icon": "icons/icon.svg"
+  },
+  "icons": {
+    "64": "icons/icon.svg"
+  },
+  "permissions": [
+    "accountsRead",
+    "messagesRead",
+    "messagesMove",
+    "messagesDelete",
+    "messagesUpdate",
+    "storage",
+    "unlimitedStorage",
+    "https://api.anthropic.com/*"
+  ],
+  "author": "Faghy",
+  "homepage_url": "https://github.com/faghy/thunderbird-wingman"
+}

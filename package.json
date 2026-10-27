@@ -1,0 +1,24 @@
+{
+  "name": "thunderbird-wingman",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node build.mjs",
+    "lint": "npx --yes web-ext lint --source-dir dist",
+    "test": "node test/rules.test.mjs && node test/flow.test.mjs"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^1.3.0"
+  },
+  "devDependencies": {
+    "esbuild": "^0.28.2"
+  },
+  "license": "GPL-3.0-or-later",
+  "author": "Faghy",
+  "description": "Thunderbird add-on that learns how you file transactional mail and does it for you",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/faghy/thunderbird-wingman.git"
+  }
+}
