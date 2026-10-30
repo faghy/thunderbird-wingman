@@ -29,7 +29,7 @@ export const DEFAULT_SETTINGS = {
 };
 
 // Bump when the data sent to the AI service changes: everyone is asked again.
-export const CONSENT_VERSION = 1;
+export const CONSENT_VERSION = 2;
 
 const DEFAULTS = {
   settings: DEFAULT_SETTINGS,

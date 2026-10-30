@@ -71,7 +71,7 @@ await import(root + "background.js");
 const call = (cmd, extra = {}) => events.msg({ cmd, ...extra });
 
 // Without consent nothing is sent, and the settings form cannot grant it.
-await call("saveSettings", { settings: { apiKey: "sk-test", aiConsentAt: Date.now(), aiConsentVersion: 1 } });
+await call("saveSettings", { settings: { apiKey: "sk-test", aiConsentAt: Date.now(), aiConsentVersion: 2 } });
 await call("learn");
 for (let i = 0; i < 50 && (await call("getState")).result.busy; i++) await new Promise((r) => setTimeout(r, 20));
 assert.equal(llmRequests.length, 0, "no request before consent");

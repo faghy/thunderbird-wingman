@@ -9,7 +9,7 @@ Text and files to paste into the Developer Hub when submitting or updating Wingm
 | Add-on package | `wingman.xpi` (`npm run build`) |
 | Source code archive | `wingman-source.zip` (`npm run source`, after committing) |
 | Icon | `store/icon-128.png` |
-| Screenshots | `store/screenshot-rules.png`, `store/screenshot-consent.png` (demo data, no real mail) |
+| Screenshots | `store/screenshot-rules.png`, `store/screenshot-activity.png`, `store/screenshot-consent.png`, `store/screenshot-settings.png` (demo data, no real mail) |
 
 ## Basic fields
 
