@@ -1,6 +1,6 @@
 # Wingman for Thunderbird
 
-[🇮🇹 Leggi in italiano](README.it.md)
+[🇮🇹 Leggi in italiano](README.it.md) · [Website](https://wingman.faghy.it/) · [Download](https://github.com/faghy/thunderbird-wingman/releases/latest)
 
 Wingman is a Thunderbird add-on (140 ESR and later) that learns how you deal with automated and transactional email (orders, shipping updates, invoices, newsletters, notifications) across all your mailboxes. It then does the same for you on new mail: moves it, archives it, sends it to the trash or tags it.
 

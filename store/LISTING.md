@@ -17,7 +17,7 @@ Text and files to paste into the Developer Hub when submitting or updating Wingm
 - **Add-on URL:** `wingman`, or another free slug if taken
 - **Categories:** Message and News Reading; Miscellaneous
 - **License:** GNU General Public License v3.0 (or later)
-- **Homepage:** https://github.com/faghy/thunderbird-wingman
+- **Homepage:** https://wingman.faghy.it/
 - **Support site:** https://github.com/faghy/thunderbird-wingman/issues
 - **Tags:** filters, automation, transactional, newsletter, ai
 - **Default locale of the listing:** Italian, with an English translation
@@ -80,7 +80,7 @@ Source code (GPL-3.0): https://github.com/faghy/thunderbird-wingman
 
 ## Privacy policy
 
-ATN wants the text pasted into the privacy policy field, not a link. Paste the full text of `PRIVACY.md`, and `PRIVACY.it.md` for the Italian listing.
+ATN wants the text pasted into the privacy policy field, not a link. Paste the full text of `PRIVACY.md`, and `PRIVACY.it.md` for the Italian listing. The same text is published at https://wingman.faghy.it/privacy (Italian); keep the two in sync.
 
 ## Notes to reviewers
 

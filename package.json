@@ -1,6 +1,6 @@
 {
   "name": "thunderbird-wingman",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "private": true,
   "type": "module",
   "scripts": {
@@ -24,5 +24,6 @@
   },
   "engines": {
     "node": ">=20"
-  }
+  },
+  "homepage": "https://wingman.faghy.it/"
 }
