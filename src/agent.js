@@ -42,11 +42,55 @@ function enqueue(task) {
   return queue;
 }
 
+// "Only when I'm using this computer": with Wingman on several computers that
+// share the same accounts, one left on and unattended must not act too. Mail
+// that arrives while this computer is idle or locked waits here and is handled
+// when the user comes back, if it is still in the inbox by then.
+export const IDLE_SECONDS = 5 * 60;
+const MAX_DEFERRED = 1000;
+const deferred = [];
+
+export function deferredCount() {
+  return deferred.length;
+}
+
+async function shouldWait() {
+  const { mode, onlyWhenInUse } = state.settings;
+  if (mode !== "auto" || !onlyWhenInUse) return false;
+  try {
+    return (await messenger.idle.queryState(IDLE_SECONDS)) !== "active";
+  } catch {
+    return false;
+  }
+}
+
 export function handleNewMail(folder, messageList) {
   if (folderKind(folder) !== "inbox" || !accountEnabled(folder.accountId)) return;
   enqueue(async () => {
     await listFolders(folder.accountId); // keeps the archive-folder cache current
-    for await (const message of iterateMessages(messageList)) await processMessage(message, folder);
+    const wait = await shouldWait();
+    for await (const message of iterateMessages(messageList)) {
+      if (!wait) await processMessage(message, folder);
+      else if (deferred.length < MAX_DEFERRED) deferred.push(message.id);
+    }
+  });
+}
+
+export function handleIdleStateChanged(newState) {
+  if (newState !== "active" || !deferred.length) return;
+  enqueue(async () => {
+    while (deferred.length) {
+      const id = deferred.shift();
+      // Another computer may have filed it meanwhile, or the user may have.
+      const message = await messenger.messages.get(id).catch(() => null);
+      const folder = message?.folder;
+      if (!folder || folderKind(folder) !== "inbox" || !accountEnabled(folder.accountId)) continue;
+      if (await shouldWait()) {
+        deferred.unshift(id);
+        return;
+      }
+      await processMessage(message, folder);
+    }
   });
 }
 

@@ -32,6 +32,7 @@
   },
   "permissions": [
     "accountsRead",
+    "idle",
     "messagesRead",
     "messagesMove",
     "messagesDelete",

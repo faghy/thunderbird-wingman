@@ -37,6 +37,7 @@ globalThis.browser = { storage: { local: {
   set: async (o) => Object.assign(storage, o),
 } } };
 let llmRequests = [];
+let idleState = "active";
 globalThis.messenger = {
   accounts: { list: async () => [{ id: "a1", name: "Lavoro", type: "imap", identities: [{ email: "Io@Lavoro.it" }] }] },
   folders: { query: async ({ accountId, path }) => folders.filter((f) => f.accountId === accountId && (path === undefined || f.path === path)) },
@@ -51,9 +52,11 @@ globalThis.messenger = {
     },
     archive: async (ids) => messenger.messages.move(ids, "f5"),
     delete: async (ids) => messenger.messages.move(ids, "f3"),
+    get: async (id) => { const m = messages.find((x) => x.id === id); if (!m) throw new Error("gone"); return view(m); },
     update: async (id, props) => Object.assign(messages.find((m) => m.id === id), props),
     onNewMailReceived: ev("onNewMailReceived"), onMoved: ev("onMoved"), onDeleted: ev("onDeleted"), onUpdated: ev("onUpdated"),
   },
+  idle: { queryState: async () => idleState, setDetectionInterval() {}, onStateChanged: ev("onIdle") },
   browserAction: { onClicked: ev("click") },
   runtime: { onInstalled: ev("installed"), onMessage: ev("msg"), openOptionsPage() {} },
 };
@@ -134,6 +137,25 @@ assert.ok(undoRes.ok, undoRes.error);
 assert.equal(promo.folderId, "f1", "undo restored inbox");
 st = (await call("getState")).result;
 assert.equal(st.rules.find((r) => r.action === "archive").reverts, 1);
+
+// "Only when in use": idle computer waits, then catches up when the user is back.
+await call("saveSettings", { settings: { onlyWhenInUse: true } });
+idleState = "idle";
+const bill3 = add("f1", "Enel <fatture@enel.it>", "Bolletta gennaio", { date: new Date(), read: false });
+const bill4 = add("f1", "Enel <fatture@enel.it>", "Bolletta febbraio", { date: new Date(), read: false });
+events.onNewMailReceived(folders[1], { id: null, messages: [view(bill3), view(bill4)] });
+await new Promise((r) => setTimeout(r, 50));
+assert.equal(bill3.folderId, "f1", "idle: nothing done");
+assert.equal((await call("getState")).result.waiting, 2);
+bill4.folderId = "f2"; // filed meanwhile by another computer
+idleState = "active";
+events.onIdle("active");
+await new Promise((r) => setTimeout(r, 50));
+assert.equal(bill3.folderId, "f2", "handled on return");
+st = (await call("getState")).result;
+assert.equal(st.waiting, 0);
+assert.ok(!st.log.some((e) => e.hid === bill4.headerMessageId), "already filed elsewhere: skipped");
+await call("saveSettings", { settings: { onlyWhenInUse: false } });
 
 // Suggest mode only logs.
 await call("saveSettings", { settings: { mode: "suggest" } });

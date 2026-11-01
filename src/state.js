@@ -13,6 +13,7 @@ export const DEFAULT_SETTINGS = {
   apiKey: "",
   model: "claude-opus-5-5",
   mode: "auto", // "auto" applies rules, "suggest" only logs what it would do
+  onlyWhenInUse: false, // in "auto", act only while this computer is in use
   disabledAccounts: [],
   historyDays: 180,
   maxPerFolder: 1000,

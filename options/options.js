@@ -70,6 +70,7 @@ function renderStatus() {
   const box = document.getElementById("status");
   box.replaceChildren(...[
     el("div", {}, busy ? `In corso: ${meta.progress || "analisi…"}` : `Messaggi osservati: ${observationCount}. Ultima analisi AI: ${formatDate(meta.lastLearnAt)}.`),
+    view.waiting > 0 && el("div", {}, `Computer inattivo: ${view.waiting} mail nuove in attesa, verranno gestite al tuo ritorno.`),
     !settings.apiKey && el("div", { class: "error" }, "Inserisci la chiave API nelle impostazioni per abilitare l'apprendimento."),
     !consented && el("div", { class: "error" }, "AI disattivata: manca il consenso all'invio dei dati. Le regole già attive continuano a funzionare."),
     meta.lastError && el("div", { class: "error" }, `Ultimo errore: ${meta.lastError}`),

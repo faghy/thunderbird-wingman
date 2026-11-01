@@ -6,7 +6,7 @@
 // Software Foundation, either version 3 of the License, or (at your option)
 // any later version. See the LICENSE file for details.
 
-import { applySuggestion, handleDeleted, handleMoved, handleNewMail, handleUpdated, undo } from "./agent.js";
+import { IDLE_SECONDS, applySuggestion, deferredCount, handleDeleted, handleIdleStateChanged, handleMoved, handleNewMail, handleUpdated, undo } from "./agent.js";
 import { checkApiKey, describeApiError } from "./llm.js";
 import { learnRules, refreshRuleStats, scanHistory } from "./learner.js";
 import { listAccounts, listFolders, listTags } from "./mail.js";
@@ -24,6 +24,8 @@ messenger.messages.onNewMailReceived.addListener(withState(handleNewMail));
 messenger.messages.onMoved.addListener(withState(handleMoved));
 messenger.messages.onDeleted.addListener(withState(handleDeleted));
 messenger.messages.onUpdated.addListener(withState(handleUpdated));
+messenger.idle.onStateChanged.addListener(withState(handleIdleStateChanged));
+messenger.idle.setDetectionInterval(IDLE_SECONDS);
 messenger.browserAction.onClicked.addListener(() => messenger.runtime.openOptionsPage());
 messenger.runtime.onInstalled.addListener(({ reason }) => {
   if (reason === "install") messenger.runtime.openOptionsPage();
@@ -85,6 +87,7 @@ const commands = {
       meta: state.meta,
       busy,
       consented: aiConsented(),
+      waiting: deferredCount(),
       observationCount: Object.keys(state.observations).length,
       ...(await describeMailboxes()),
     };
