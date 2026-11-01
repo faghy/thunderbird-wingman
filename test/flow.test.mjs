@@ -38,7 +38,7 @@ globalThis.browser = { storage: { local: {
 } } };
 let llmRequests = [];
 globalThis.messenger = {
-  accounts: { list: async () => [{ id: "a1", name: "Lavoro", type: "imap" }] },
+  accounts: { list: async () => [{ id: "a1", name: "Lavoro", type: "imap", identities: [{ email: "Io@Lavoro.it" }] }] },
   folders: { query: async ({ accountId, path }) => folders.filter((f) => f.accountId === accountId && (path === undefined || f.path === path)) },
   messages: {
     listTags: async () => [{ key: "$label1", tag: "Importante", color: "#FF0000" }],
@@ -146,5 +146,39 @@ const sug = st.log.find((e) => e.hid === bill2.headerMessageId);
 assert.equal(sug.status, "suggested");
 assert.ok((await call("applySuggestion", { id: sug.id })).ok);
 assert.equal(bill2.folderId, "f2");
+// Export, then import on "another computer" where the same account has a different id.
+const requestsBefore = llmRequests.length;
+const exported = (await call("exportRules")).result;
+assert.equal(exported.format, "wingman-rules");
+assert.ok(!JSON.stringify(exported).includes("sk-test"), "no API key in the export");
+assert.deepEqual(exported.accounts.map((a) => a.emails), [["io@lavoro.it"]]);
+const moveRule = exported.rules.find((r) => r.action === "move");
+const elsewhere = structuredClone(exported);
+for (const r of elsewhere.rules) if (r.accountId === "a1") r.accountId = "account7";
+elsewhere.accounts[0].id = "account7";
+elsewhere.rules.push(
+  { ...moveRule, fromAddresses: ["x@y.it"], accountId: "account7", folderPath: "/Manca", status: "active" },
+  { ...moveRule, fromAddresses: ["z@y.it"], accountId: "account9", status: "active" },
+  { ...moveRule, fromAddresses: ["t@y.it"], action: "tag", accountId: "", folderPath: "", tagKey: "$old" },
+  { ...moveRule, fromAddresses: ["k@y.it"], action: "rm -rf" },
+);
+elsewhere.accounts.push({ id: "account9", name: "Privata", type: "imap", emails: ["altro@x.it"] });
+elsewhere.tags = { $old: "importante" };
+await call("resetLearning");
+const imported = await call("importRules", { data: elsewhere });
+assert.ok(imported.ok, imported.error);
+assert.equal(imported.result.added, 3, JSON.stringify(imported.result));
+assert.deepEqual(imported.result.skipped.map((s) => s.reason), ["cartella /Manca non trovata", "casella «Privata» non presente su questo computer", "azione sconosciuta"]);
+st = (await call("getState")).result;
+const importedMove = st.rules.find((r) => r.action === "move");
+assert.equal(importedMove.accountId, "a1", "account mapped by address");
+assert.equal(importedMove.status, "active");
+assert.equal(st.rules.find((r) => r.action === "tag").tagKey, "$label1", "tag mapped by name");
+const again = await call("importRules", { data: elsewhere });
+assert.equal(again.result.updated, 3, "importing twice does not duplicate");
+assert.equal((await call("getState")).result.rules.length, 3);
+assert.match((await call("importRules", { data: { rules: [] } })).error, /non è un'esportazione/);
+assert.equal(llmRequests.length, requestsBefore, "import and export never call the API");
+
 console.log("flow test passed; requests:", llmRequests.length);
 process.exit(0);

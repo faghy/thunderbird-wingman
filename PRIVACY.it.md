@@ -2,7 +2,7 @@
 
 [🇬🇧 Read in English](PRIVACY.md)
 
-Ultimo aggiornamento: 30 ottobre 2026
+Ultimo aggiornamento: 1 novembre 2026
 
 Wingman è un componente aggiuntivo di Thunderbird che impara come gestisci le mail automatiche e transazionali e ripete le stesse azioni sulla posta nuova. Questa informativa spiega quali dati legge, quali escono dal tuo computer e dove vanno.
 
@@ -12,7 +12,7 @@ Wingman è sviluppato da Faghy (https://github.com/faghy/thunderbird-wingman). W
 
 ## Dati letti sul tuo computer
 
-Per imparare, Wingman legge le intestazioni dei messaggi nelle caselle che hai attivato: mittente, oggetto, data, cartella, etichette e stato di lettura. Legge anche il testo delle nuove mail automatiche che arrivano in posta in arrivo. Questa elaborazione avviene dentro Thunderbird. I risultati (statistiche, regole imparate, registro delle attività e impostazioni, compresa la chiave API) restano nello spazio locale del componente aggiuntivo e vengono cancellati quando lo disinstalli o premi «Azzera tutto ciò che è stato imparato».
+Per imparare, Wingman legge le intestazioni dei messaggi nelle caselle che hai attivato: mittente, oggetto, data, cartella, etichette e stato di lettura. Legge anche il testo delle nuove mail automatiche che arrivano in posta in arrivo. Questa elaborazione avviene dentro Thunderbird. I risultati (statistiche, regole imparate, registro delle attività e impostazioni, compresa la chiave API) restano nello spazio locale del componente aggiuntivo e vengono cancellati quando lo disinstalli o premi «Azzera tutto ciò che è stato imparato». Se usi «Esporta regole», Wingman salva le regole (mittenti, parole dell'oggetto, nomi e indirizzi delle caselle, cartelle ed etichette) in un file sul tuo computer, senza la chiave API: quel file lo gestisci tu.
 
 ## Dati inviati a terzi
 

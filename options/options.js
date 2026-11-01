@@ -87,6 +87,17 @@ function renderStatus() {
   );
 }
 
+function renderImportReport() {
+  const report = view.meta.lastImport;
+  document.getElementById("import-report").replaceChildren(
+    report
+      ? el("details", {},
+          el("summary", {}, `Ultima importazione (${formatDate(report.at)}): ${report.added} regole aggiunte, ${report.updated} aggiornate, ${report.skipped.length} saltate`),
+          el("ul", {}, report.skipped.map((r) => el("li", {}, `${r.description || "(senza descrizione)"} — ${r.reason}`))))
+      : "",
+  );
+}
+
 function renderRules() {
   const order = { active: 0, proposed: 1, disabled: 2 };
   const rules = [...view.rules].sort((a, b) => order[a.status] - order[b.status] || b.support - a.support);
@@ -190,6 +201,7 @@ async function refresh() {
   view = await send("getState");
   renderStatus();
   renderRules();
+  renderImportReport();
   renderLog();
   renderConsent();
   renderSettings();
@@ -233,6 +245,40 @@ document.getElementById("consent-yes").addEventListener("click", async () => {
 document.getElementById("consent-no").addEventListener("click", () => {
   consentDismissed = true;
   renderConsent();
+});
+
+document.getElementById("export").addEventListener("click", async () => {
+  try {
+    const data = await send("exportRules");
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const day = new Date().toISOString().slice(0, 10);
+    el("a", { href: url, download: `wingman-regole-${day}.json` }).click();
+    setTimeout(() => URL.revokeObjectURL(url), 60 * 1000);
+  } catch (error) {
+    alert(error.message);
+  }
+});
+
+document.getElementById("import").addEventListener("click", () => document.getElementById("import-file").click());
+
+document.getElementById("import-file").addEventListener("change", async (event) => {
+  const [file] = event.target.files;
+  event.target.value = "";
+  if (!file) return;
+  try {
+    let data;
+    try {
+      data = JSON.parse(await file.text());
+    } catch {
+      throw new Error("Il file non è un JSON valido");
+    }
+    const report = await send("importRules", { data });
+    alert(`Regole aggiunte: ${report.added}. Aggiornate: ${report.updated}. Saltate: ${report.skipped.length}.`);
+  } catch (error) {
+    alert(error.message);
+  }
+  await refresh();
 });
 
 document.getElementById("reset").addEventListener("click", async () => {

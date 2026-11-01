@@ -20,6 +20,7 @@ It works by watching what you already do. You don't write any filters.
 3. **Verify.** Every proposed rule is re-checked locally against your history. It is dropped if it rests on fewer than 3 messages or if you behaved consistently less than 85% of the time (both thresholds are configurable). A rule can never point to a folder or tag that doesn't exist.
 4. **Act.** New mail in the inbox is matched against the active rules locally, with no API call and no cost. When automated mail comes from a sender that no rule covers, the model can map it to an existing rule, for example a shipping notice from a shop you've never bought from. Its answer is limited to the IDs of existing rules or "none", so it cannot invent new actions.
 5. **Self-correct.** Every action can be undone from the options page. If you drag a message Wingman filed back to the inbox, it notices. A rule you keep undoing switches itself off.
+6. **Move to other computers.** "Export rules" saves the rules to a JSON file, and "Import rules" loads it on another computer with the same accounts. Accounts are matched by their address, rules whose folders or tags don't exist there are skipped, and no API call is made.
 
 ## Safety
 
@@ -58,6 +59,7 @@ Wingman uses the Anthropic API; the default model is Claude Opus 5.5. Rules are 
 | `src/learner.js` | History scan, per-sender summary, rule generation and verification |
 | `src/rules.js` | Rule matching, statistics, observations |
 | `src/mail.js` | Thunderbird API helpers |
+| `src/transfer.js` | Export and import of the rules between computers |
 | `src/llm.js` | Model API calls with structured output |
 | `options/` | Settings, rules and activity page |
 | `test/` | Node tests with Thunderbird and the API mocked |

@@ -10,6 +10,7 @@ import { applySuggestion, handleDeleted, handleMoved, handleNewMail, handleUpdat
 import { checkApiKey, describeApiError } from "./llm.js";
 import { learnRules, refreshRuleStats, scanHistory } from "./learner.js";
 import { listAccounts, listFolders, listTags } from "./mail.js";
+import { exportRules, importRules } from "./transfer.js";
 import { CONSENT_VERSION, DEFAULT_SETTINGS, aiConsented, aiEnabled, init, save, state } from "./state.js";
 
 const ready = init();
@@ -122,6 +123,8 @@ const commands = {
     state.rules = state.rules.filter((r) => r.id !== id);
     save("rules");
   },
+  exportRules: () => exportRules(),
+  importRules: ({ data }) => importRules(data),
   undo: ({ id }) => undo(id),
   applySuggestion: ({ id }) => applySuggestion(id),
   async resetLearning() {

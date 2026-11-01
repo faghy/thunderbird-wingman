@@ -88,7 +88,7 @@ Paste this into "Notes to Reviewer" and add a test key at the marked spot.
 
 ```
 Build instructions
-- Requirements: Node.js 20 or later (built with Node 24.22.0, npm 11.19.1), zip (Info-ZIP).
+- Requirements: Node.js 20.15 or later (built with Node 24.22.0, npm 11.19.1). No other tools: the .xpi is packed by build.mjs itself.
 - Steps: unpack the source archive, then run
     npm ci
     npm run build

@@ -20,6 +20,7 @@ Lavora osservando quello che fai già: non devi scrivere nessun filtro.
 3. **Verifica.** Ogni regola proposta viene ricontrollata in locale sul tuo storico. Viene scartata se si basa su meno di 3 messaggi o se il tuo comportamento è stato coerente meno dell'85% delle volte (entrambe le soglie sono configurabili). Una regola non può mai puntare a cartelle o etichette inesistenti.
 4. **Agisce.** Le mail nuove in Posta in arrivo vengono confrontate con le regole attive in locale, senza chiamate API e senza costi. Quando una mail automatica arriva da un mittente che nessuna regola copre, il modello può collegarla a una regola esistente, per esempio l'avviso di spedizione di un negozio da cui non hai mai comprato. La sua risposta può essere solo l'ID di una regola esistente oppure "nessuna", quindi non può inventare azioni nuove.
 5. **Si corregge.** Ogni azione si può annullare dalla pagina delle opzioni. Se rimetti in Posta in arrivo una mail che Wingman aveva spostato, lui se ne accorge. Una regola che annulli spesso si disattiva da sola.
+6. **Si porta su altri computer.** «Esporta regole» salva le regole in un file JSON, che «Importa regole» carica su un altro computer con le stesse caselle. Le caselle vengono riconosciute dal loro indirizzo, le regole con cartelle o etichette che lì non esistono vengono saltate, e non c'è nessuna chiamata all'API.
 
 ## Sicurezza
 
@@ -58,6 +59,7 @@ Wingman usa l'API di Anthropic; il modello predefinito è Claude Opus 5.5. Le re
 | `src/learner.js` | Scansione dello storico, riepilogo per mittente, generazione e verifica delle regole |
 | `src/rules.js` | Corrispondenza delle regole, statistiche, osservazioni |
 | `src/mail.js` | Helper per le API di Thunderbird |
+| `src/transfer.js` | Esportazione e importazione delle regole tra computer |
 | `src/llm.js` | Chiamate API al modello con output strutturato |
 | `options/` | Pagina di impostazioni, regole e attività |
 | `test/` | Test in Node con Thunderbird e API simulati |

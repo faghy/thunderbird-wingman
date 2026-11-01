@@ -44,6 +44,13 @@
       <thead><tr><th>Regola</th><th>Azione</th><th>Storico</th><th>Applicata</th><th>Stato</th><th></th></tr></thead>
       <tbody id="rules"></tbody>
     </table>
+    <div class="row transfer">
+      <button id="export">Esporta regole…</button>
+      <button id="import">Importa regole…</button>
+      <input type="file" id="import-file" accept=".json,application/json" hidden>
+      <span class="muted">Per usare le stesse regole su un altro computer con le stesse caselle. Il file resta sul tuo computer e non contiene la chiave API.</span>
+    </div>
+    <div id="import-report"></div>
   </section>
 
   <section>

@@ -23,7 +23,7 @@
     "url": "https://github.com/faghy/thunderbird-wingman.git"
   },
   "engines": {
-    "node": ">=20"
+    "node": ">=20.15"
   },
   "homepage": "https://wingman.faghy.it/"
 }

@@ -8,8 +8,8 @@
 
 // Bundles the background script (with the Anthropic SDK) and packs the .xpi.
 import { build } from "esbuild";
-import { cpSync, mkdirSync, rmSync } from "node:fs";
-import { execFileSync } from "node:child_process";
+import { cpSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { crc32, deflateRawSync } from "node:zlib";
 
 const outdir = "dist";
 rmSync(outdir, { recursive: true, force: true });
@@ -27,6 +27,59 @@ await build({
 
 for (const path of ["manifest.json", "options", "icons"]) cpSync(path, `${outdir}/${path}`, { recursive: true });
 
-rmSync("wingman.xpi", { force: true });
-execFileSync("zip", ["-qr", "../wingman.xpi", "."], { cwd: outdir });
+writeFileSync("wingman.xpi", zip(outdir));
 console.log("Creato wingman.xpi");
+
+// Minimal deterministic zip writer (sorted entries, fixed timestamps), so the
+// build needs nothing besides Node and gives the same .xpi every time.
+function zip(dir) {
+  const names = readdirSync(dir, { recursive: true, withFileTypes: true })
+    .filter((e) => e.isFile())
+    .map((e) => `${e.parentPath ?? e.path}/${e.name}`.slice(dir.length + 1))
+    .sort();
+  const DOS_DATE = (1 << 5) | 1; // 1980-01-01
+  const locals = [];
+  const central = [];
+  let offset = 0;
+  for (const name of names) {
+    const data = readFileSync(`${dir}/${name}`);
+    const packed = deflateRawSync(data, { level: 9 });
+    const nameBuf = Buffer.from(name, "utf8");
+    const local = Buffer.alloc(30);
+    local.writeUInt32LE(0x04034b50, 0);
+    local.writeUInt16LE(20, 4); // version needed
+    local.writeUInt16LE(0x0800, 6); // UTF-8 names
+    local.writeUInt16LE(8, 8); // deflate
+    local.writeUInt16LE(0, 10);
+    local.writeUInt16LE(DOS_DATE, 12);
+    local.writeUInt32LE(crc32(data), 14);
+    local.writeUInt32LE(packed.length, 18);
+    local.writeUInt32LE(data.length, 22);
+    local.writeUInt16LE(nameBuf.length, 26);
+    locals.push(local, nameBuf, packed);
+
+    const entry = Buffer.alloc(46);
+    entry.writeUInt32LE(0x02014b50, 0);
+    entry.writeUInt16LE(20, 4);
+    entry.writeUInt16LE(20, 6);
+    entry.writeUInt16LE(0x0800, 8);
+    entry.writeUInt16LE(8, 10);
+    entry.writeUInt16LE(0, 12);
+    entry.writeUInt16LE(DOS_DATE, 14);
+    entry.writeUInt32LE(crc32(data), 16);
+    entry.writeUInt32LE(packed.length, 20);
+    entry.writeUInt32LE(data.length, 24);
+    entry.writeUInt16LE(nameBuf.length, 28);
+    entry.writeUInt32LE(offset, 42);
+    central.push(entry, nameBuf);
+    offset += local.length + nameBuf.length + packed.length;
+  }
+  const centralBuf = Buffer.concat(central);
+  const end = Buffer.alloc(22);
+  end.writeUInt32LE(0x06054b50, 0);
+  end.writeUInt16LE(names.length, 8);
+  end.writeUInt16LE(names.length, 10);
+  end.writeUInt32LE(centralBuf.length, 12);
+  end.writeUInt32LE(offset, 16);
+  return Buffer.concat([...locals, centralBuf, end]);
+}

@@ -2,7 +2,7 @@
 
 [🇮🇹 Leggi in italiano](PRIVACY.it.md)
 
-Last updated: 30 October 2026
+Last updated: 1 November 2026
 
 Wingman is a Thunderbird add-on that learns how you file automated and transactional email and repeats it on new mail. This policy explains what data it reads, what leaves your computer, and where it goes.
 
@@ -12,7 +12,7 @@ Wingman is developed by Faghy (https://github.com/faghy/thunderbird-wingman). Wi
 
 ## Data read on your computer
 
-To learn, Wingman reads the headers of messages in the mail accounts you enable: sender, subject, date, folder, tags and read status. It also reads the text of new automated messages that arrive in the inbox. This processing happens inside Thunderbird. Its results (statistics, learned rules, activity log and your settings, including your API key) are stored in the add-on's local storage and are deleted when you uninstall the add-on or press "Reset everything learned".
+To learn, Wingman reads the headers of messages in the mail accounts you enable: sender, subject, date, folder, tags and read status. It also reads the text of new automated messages that arrive in the inbox. This processing happens inside Thunderbird. Its results (statistics, learned rules, activity log and your settings, including your API key) are stored in the add-on's local storage and are deleted when you uninstall the add-on or press "Reset everything learned". If you use "Export rules", Wingman saves the rules (senders, subject keywords, names and addresses of the accounts, folders and tags) to a file on your computer, without the API key: that file is yours to handle.
 
 ## Data sent to a third party
 
