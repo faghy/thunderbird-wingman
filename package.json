@@ -1,6 +1,6 @@
 {
   "name": "thunderbird-wingman",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "private": true,
   "type": "module",
   "scripts": {
@@ -16,7 +16,7 @@
     "esbuild": "^0.28.2"
   },
   "license": "GPL-3.0-or-later",
-  "author": "Faghy",
+  "author": "Serafino Christian",
   "description": "Thunderbird add-on that learns how you file transactional mail and does it for you",
   "repository": {
     "type": "git",

@@ -2,13 +2,13 @@
 
 [🇮🇹 Leggi in italiano](PRIVACY.it.md)
 
-Last updated: 1 November 2026
+Last updated: 7 November 2026
 
 Wingman is a Thunderbird add-on that learns how you file automated and transactional email and repeats it on new mail. This policy explains what data it reads, what leaves your computer, and where it goes.
 
 ## Who is responsible
 
-Wingman is developed by Faghy (https://github.com/faghy/thunderbird-wingman). Wingman has no servers of its own. The developer does not receive, store or see any of your data.
+Wingman is developed by Serafino Christian (https://github.com/faghy/thunderbird-wingman). Wingman has no servers of its own. The developer does not receive, store or see any of your data.
 
 ## Data read on your computer
 

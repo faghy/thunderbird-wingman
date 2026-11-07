@@ -1,5 +1,5 @@
 // Wingman - Thunderbird add-on that learns how you file transactional mail.
-// Copyright (C) 2026 Faghy
+// Copyright (C) 2026 Serafino Christian
 //
 // This program is free software: you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by the Free

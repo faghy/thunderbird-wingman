@@ -67,4 +67,4 @@ Wingman usa l'API di Anthropic; il modello predefinito è Claude Opus 5.5. Le re
 
 ## Licenza
 
-Copyright (C) 2026 Faghy. Distribuito con licenza [GNU General Public License v3.0 o successiva](LICENSE): puoi usarlo, studiarlo, modificarlo e ridistribuirlo, ma le opere derivate devono restare sotto GPL e mantenere l'indicazione del copyright originale.
+Copyright (C) 2026 Serafino Christian. Distribuito con licenza [GNU General Public License v3.0 o successiva](LICENSE): puoi usarlo, studiarlo, modificarlo e ridistribuirlo, ma le opere derivate devono restare sotto GPL e mantenere l'indicazione del copyright originale.
