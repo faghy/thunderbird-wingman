@@ -2,7 +2,7 @@
   "manifest_version": 2,
   "name": "Wingman",
   "description": "Impara come gestisci le mail transazionali (spostare, archiviare, eliminare, etichettare) e lo fa in automatico con l'AI.",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "browser_specific_settings": {
     "gecko": {
       "id": "wingman@tabularis.dev",

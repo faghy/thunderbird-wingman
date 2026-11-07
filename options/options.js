@@ -109,9 +109,10 @@ function renderRules() {
         el("strong", {}, rule.category || "—"), " ", rule.description,
         el("small", {}, `Mittenti: ${senders}`),
         rule.subjectKeywords.length > 0 && el("small", {}, `Oggetto contiene: ${rule.subjectKeywords.join(", ")}`),
-        rule.accountId && el("small", {}, `Solo casella: ${accountLabel(rule.accountId)}`),
         rule.examples?.length > 0 && el("small", {}, `Esempi: ${rule.examples.join(" · ")}`)),
-      el("td", {}, ACTION_LABELS[rule.action], " ", el("em", {}, targetLabel(rule))),
+      // The account has its own column, so a move shows only the folder path.
+      el("td", {}, ACTION_LABELS[rule.action], " ", el("em", {}, rule.action === "move" ? rule.folderPath.replace(/^\//, "") : targetLabel(rule))),
+      el("td", {}, rule.accountId ? accountLabel(rule.accountId) || "(casella non trovata)" : el("span", { class: "muted" }, "Tutte")),
       el("td", {}, `${rule.support} casi`, el("small", {}, `${Math.round(rule.confidence * 100)}% coerente`)),
       el("td", {}, rule.applied || 0, rule.reverts ? el("small", {}, `${rule.reverts} annullate`) : ""),
       el("td", {}, el("span", { class: `badge ${rule.status}` }, RULE_STATUS[rule.status]), rule.disabledReason && el("small", {}, rule.disabledReason)),
@@ -124,7 +125,7 @@ function renderRules() {
     );
   });
   document.getElementById("rules").replaceChildren(
-    ...(rows.length ? rows : [el("tr", {}, el("td", { colSpan: 6, class: "muted" }, "Nessuna regola ancora. Avvia un'analisi."))]),
+    ...(rows.length ? rows : [el("tr", {}, el("td", { colSpan: 7, class: "muted" }, "Nessuna regola ancora. Avvia un'analisi."))]),
   );
 }
 
