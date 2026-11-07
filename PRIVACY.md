@@ -31,7 +31,7 @@ Anthropic processes this data under its own privacy policy (https://www.anthropi
 
 ## No tracking
 
-Wingman has no analytics, telemetry, advertising or tracking, and makes no network requests other than those described above.
+Wingman has no analytics, telemetry, advertising or tracking, and makes no network requests other than those described above. If you installed it from GitHub, Thunderbird periodically checks for a new version by reading a public file on GitHub (`raw.githubusercontent.com`) and, if there is one, downloads it from GitHub: these requests carry no data from your mail. If you installed it from addons.thunderbird.net, updates come from that site.
 
 ## Changes
 

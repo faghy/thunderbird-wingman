@@ -6,7 +6,7 @@ Text and files to paste into the Developer Hub when submitting or updating Wingm
 
 | Field | File |
 |---|---|
-| Add-on package | `wingman.xpi` (`npm run build`) |
+| Add-on package | `wingman-atn.xpi` (`npm run build`), not `wingman.xpi`: that one has an `update_url` for GitHub users, which ATN does not allow |
 | Source code archive | `wingman-source.zip` (`npm run source`, after committing) |
 | Icon | `store/icon-128.png` |
 | Screenshots | `store/screenshot-rules.png`, `store/screenshot-activity.png`, `store/screenshot-consent.png`, `store/screenshot-settings.png` (demo data, no real mail) |
@@ -92,7 +92,9 @@ Build instructions
 - Steps: unpack the source archive, then run
     npm ci
     npm run build
-- The output is dist/ and wingman.xpi. dist/background.js is src/background.js bundled with esbuild
+- The output is dist/, wingman-atn.xpi (the uploaded package: exactly the files in dist/) and wingman.xpi
+  (the GitHub build: the same files with an update_url added to the manifest; not uploaded here).
+  dist/background.js is src/background.js bundled with esbuild
   (not minified) together with the official Anthropic SDK @anthropic-ai/sdk 1.3.0
   (https://www.npmjs.com/package/@anthropic-ai/sdk/v/1.3.0). Every other file is copied unchanged.
 - Tests: npm test

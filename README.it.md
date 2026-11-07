@@ -36,10 +36,11 @@ Lavora osservando quello che fai già: non devi scrivere nessun filtro.
 ```bash
 npm install
 npm test        # test della logica con Thunderbird e API simulati
-npm run build   # crea dist/ e wingman.xpi
+npm run build   # crea dist/, wingman.xpi (GitHub) e wingman-atn.xpi (addons.thunderbird.net)
 ```
 
 In Thunderbird vai su *Strumenti → Componenti aggiuntivi e temi → ⚙ → Installa componente aggiuntivo da file…* e scegli `wingman.xpi`.
+La versione scaricata da GitHub si aggiorna da sola: Thunderbird legge [`updates.json`](updates.json) e installa le versioni nuove, conservando regole e apprendimento. Per pubblicare una versione: aumenta `version` in `manifest.json` e `package.json`, poi `npm run build`, `npm run updates`, commit e push, infine la release `vX.Y.Z` su GitHub con allegato `wingman.xpi` rinominato `wingman-X.Y.Z.xpi`.
 Per lo sviluppo usa *Strumenti → Strumenti per sviluppatori → Debug componenti aggiuntivi → Carica componente aggiuntivo temporaneo* e scegli `dist/manifest.json`.
 
 La pagina delle opzioni si apre da sola al primo avvio, oppure dal pulsante nella barra. Accetta il riquadro del consenso, inserisci la tua chiave API di Anthropic e premi **Analizza e impara ora**. Per i primi giorni la **modalità solo suggerimenti** è un buon modo per controllare cosa farebbe Wingman.

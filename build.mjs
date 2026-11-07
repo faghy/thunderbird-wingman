@@ -6,7 +6,11 @@
 // Software Foundation, either version 3 of the License, or (at your option)
 // any later version. See the LICENSE file for details.
 
-// Bundles the background script (with the Anthropic SDK) and packs the .xpi.
+// Bundles the background script (with the Anthropic SDK) and packs two .xpi:
+// - wingman-atn.xpi for addons.thunderbird.net, exactly the files in dist/;
+// - wingman.xpi for GitHub releases, the same files plus an update_url in the
+//   manifest so Thunderbird updates it by itself (ATN does not allow update_url,
+//   it delivers updates on its own).
 import { build } from "esbuild";
 import { cpSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { crc32, deflateRawSync } from "node:zlib";
@@ -27,12 +31,17 @@ await build({
 
 for (const path of ["manifest.json", "options", "icons"]) cpSync(path, `${outdir}/${path}`, { recursive: true });
 
-writeFileSync("wingman.xpi", zip(outdir));
-console.log("Creato wingman.xpi");
+const UPDATE_URL = "https://raw.githubusercontent.com/faghy/thunderbird-wingman/main/updates.json";
+
+writeFileSync("wingman-atn.xpi", zip(outdir));
+const manifest = JSON.parse(readFileSync(`${outdir}/manifest.json`, "utf8"));
+manifest.browser_specific_settings.gecko.update_url = UPDATE_URL;
+writeFileSync("wingman.xpi", zip(outdir, { "manifest.json": Buffer.from(JSON.stringify(manifest, null, 2) + "\n") }));
+console.log("Creati wingman.xpi (GitHub, aggiornamenti automatici) e wingman-atn.xpi (addons.thunderbird.net)");
 
 // Minimal deterministic zip writer (sorted entries, fixed timestamps), so the
 // build needs nothing besides Node and gives the same .xpi every time.
-function zip(dir) {
+function zip(dir, overrides = {}) {
   const names = readdirSync(dir, { recursive: true, withFileTypes: true })
     .filter((e) => e.isFile())
     .map((e) => `${e.parentPath ?? e.path}/${e.name}`.slice(dir.length + 1))
@@ -42,7 +51,7 @@ function zip(dir) {
   const central = [];
   let offset = 0;
   for (const name of names) {
-    const data = readFileSync(`${dir}/${name}`);
+    const data = overrides[name] ?? readFileSync(`${dir}/${name}`);
     const packed = deflateRawSync(data, { level: 9 });
     const nameBuf = Buffer.from(name, "utf8");
     const local = Buffer.alloc(30);

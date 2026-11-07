@@ -1,0 +1,18 @@
+{
+  "addons": {
+    "wingman@tabularis.dev": {
+      "updates": [
+        {
+          "version": "0.2.4",
+          "update_link": "https://github.com/faghy/thunderbird-wingman/releases/download/v0.2.4/wingman-0.2.4.xpi",
+          "update_hash": "sha256:3bc916cec8c0e70c6e91c1c93c601e578be44b86f0d71d4edeeb15641543b7ef",
+          "applications": {
+            "gecko": {
+              "strict_min_version": "140.0"
+            }
+          }
+        }
+      ]
+    }
+  }
+}

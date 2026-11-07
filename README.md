@@ -36,10 +36,11 @@ It works by watching what you already do. You don't write any filters.
 ```bash
 npm install
 npm test        # logic tests against a simulated Thunderbird and API
-npm run build   # produces dist/ and wingman.xpi
+npm run build   # produces dist/, wingman.xpi (GitHub) and wingman-atn.xpi (addons.thunderbird.net)
 ```
 
 In Thunderbird, go to *Tools → Add-ons and Themes → ⚙ → Install Add-on From File…* and pick `wingman.xpi`.
+The build downloaded from GitHub updates itself: Thunderbird reads [`updates.json`](updates.json) and installs new versions, keeping rules and learning. To publish a version: bump `version` in `manifest.json` and `package.json`, run `npm run build` and `npm run updates`, commit and push, then create the GitHub release `vX.Y.Z` with `wingman.xpi` attached as `wingman-X.Y.Z.xpi`.
 For development, use *Tools → Developer Tools → Debug Add-ons → Load Temporary Add-on* and pick `dist/manifest.json`.
 
 The options page opens on first run, or from the toolbar button. Accept the consent panel, enter your Anthropic API key and press **Analizza e impara ora** ("Analyze and learn now"; the UI is currently in Italian). For the first few days, **suggest-only mode** is a good way to check what Wingman would do.
