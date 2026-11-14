@@ -200,6 +200,15 @@ const again = await call("importRules", { data: elsewhere });
 assert.equal(again.result.updated, 3, "importing twice does not duplicate");
 assert.equal((await call("getState")).result.rules.length, 3);
 assert.match((await call("importRules", { data: { rules: [] } })).error, /non è un'esportazione/);
+const dup = structuredClone(elsewhere);
+dup.rules = [
+  { ...moveRule, accountId: "account7", status: "active", fromAddresses: ["fatture@enel.it"], subjectKeywords: [] },
+  { ...moveRule, accountId: "account7", status: "active", fromAddresses: ["fatture@enel.it"], subjectKeywords: ["bolletta"] },
+];
+await call("resetLearning");
+const dupRes = (await call("importRules", { data: dup })).result;
+assert.equal(dupRes.merged, 1, "duplicates merged on import");
+assert.equal((await call("getState")).result.rules.length, 1);
 assert.equal(llmRequests.length, requestsBefore, "import and export never call the API");
 
 console.log("flow test passed; requests:", llmRequests.length);

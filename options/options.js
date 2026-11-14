@@ -93,7 +93,7 @@ function renderImportReport() {
   document.getElementById("import-report").replaceChildren(
     report
       ? el("details", {},
-          el("summary", {}, `Ultima importazione (${formatDate(report.at)}): ${report.added} regole aggiunte, ${report.updated} aggiornate, ${report.skipped.length} saltate`),
+          el("summary", {}, `Ultima importazione (${formatDate(report.at)}): ${report.added} regole aggiunte, ${report.updated} aggiornate, ${report.skipped.length} saltate${report.merged ? `, ${report.merged} doppie unite` : ""}`),
           el("ul", {}, report.skipped.map((r) => el("li", {}, `${r.description || "(senza descrizione)"} — ${r.reason}`))))
       : "",
   );

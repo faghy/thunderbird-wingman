@@ -13,6 +13,7 @@
 
 import { listAccounts, listFolders, listTags } from "./mail.js";
 import { normalizeRule, ruleId, ruleStats } from "./rules.js";
+import { mergeRulesInState } from "./learner.js";
 import { save, state } from "./state.js";
 
 const FORMAT = "wingman-rules";
@@ -131,6 +132,7 @@ export async function importRules(data) {
       report.added++;
     }
   }
+  report.merged = mergeRulesInState();
   state.meta.lastImport = { at: Date.now(), ...report };
   save("rules", "meta");
   return report;

@@ -8,12 +8,15 @@
 
 import { IDLE_SECONDS, applySuggestion, deferredCount, handleDeleted, handleIdleStateChanged, handleMoved, handleNewMail, handleUpdated, undo } from "./agent.js";
 import { checkApiKey, describeApiError } from "./llm.js";
-import { learnRules, refreshRuleStats, scanHistory } from "./learner.js";
+import { learnRules, mergeRulesInState, refreshRuleStats, scanHistory } from "./learner.js";
 import { listAccounts, listFolders, listTags } from "./mail.js";
 import { exportRules, importRules } from "./transfer.js";
 import { CONSENT_VERSION, DEFAULT_SETTINGS, aiConsented, aiEnabled, init, save, state } from "./state.js";
 
-const ready = init();
+// Rules saved by older versions may contain duplicates: merge them once loaded.
+const ready = init().then(() => {
+  mergeRulesInState();
+});
 const withState = (fn) => async (...args) => {
   await ready;
   return fn(...args);

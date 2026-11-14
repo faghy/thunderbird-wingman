@@ -8,7 +8,7 @@
 
 import assert from "node:assert/strict";
 const root = new URL("../src/", import.meta.url).href;
-const { toObservation, ruleStats, normalizeRule, ruleId, pickRules } = await import(root + "rules.js");
+const { toObservation, ruleStats, normalizeRule, ruleId, pickRules, mergeDuplicateRules } = await import(root + "rules.js");
 const { subjectTemplate, parseAddress, looksTransactional } = await import(root + "mail.js");
 
 const old = new Date(Date.now() - 10 * 864e5);
@@ -64,4 +64,43 @@ picked = pickRules(rules, { from: "x@mail.enel.it", domain: "mail.enel.it", subj
 assert.equal(picked.folderRule.id, "a", "subdomain matches domain rule");
 picked = pickRules(rules, { from: "news@shop.it", domain: "shop.it", subject: "x", accountId: "a1" }, ["$label4"]);
 assert.equal(picked.tagRules.length, 0, "existing tag not re-applied");
+// Duplicate rules are merged only when one rule can say the same thing.
+const mk = (o) => {
+  const r = { ...normalizeRule({ action: "delete", fromAddresses: [], fromDomains: [], subjectKeywords: [], ...o }), status: "active", support: 1, applied: 1, ...o.extra };
+  return { ...r, id: ruleId(r) };
+};
+const gh1 = mk({ fromAddresses: ["notifications@github.com"], description: "tutte", extra: { support: 9 } });
+const gh2 = mk({ fromAddresses: ["notifications@github.com"], subjectKeywords: ["pull request"] });
+const gh3 = mk({ fromAddresses: ["notifications@github.com"], subjectKeywords: ["issue"] });
+const ghOtherAccount = mk({ fromAddresses: ["notifications@github.com"], accountId: "a2" });
+const ghProposed = mk({ fromAddresses: ["notifications@github.com"], subjectKeywords: ["release"], extra: { status: "proposed" } });
+let merged = mergeDuplicateRules([gh2, gh1, gh3, ghOtherAccount, ghProposed]);
+assert.equal(merged.rules.length, 2, "github: one per account; the proposed one is covered by the active one");
+const kept = merged.rules.find((r) => r.status === "active" && !r.accountId);
+assert.deepEqual(kept.subjectKeywords, [], "the rule for any subject covers the keyword ones");
+assert.equal(kept.applied, 4, "counters add up");
+assert.equal(kept.description, "tutte", "description of the best supported rule");
+assert.equal(merged.remap[gh2.id], kept.id);
+assert.equal(merged.remap[gh3.id], kept.id);
+
+const spam1 = mk({ fromAddresses: ["a@x.it", "b@y.it"] });
+const spam2 = mk({ fromAddresses: ["c@z.it"] });
+const spam3 = mk({ fromAddresses: ["a@x.it", "b@y.it"], subjectKeywords: ["promo"] });
+merged = mergeDuplicateRules([spam1, spam2, spam3]);
+assert.equal(merged.rules.length, 1);
+assert.deepEqual(merged.rules[0].fromAddresses, ["a@x.it", "b@y.it", "c@z.it"]);
+assert.deepEqual(merged.rules[0].subjectKeywords, []);
+
+const k1 = mk({ fromAddresses: ["n@shop.it"], subjectKeywords: ["ordine"] });
+const k2 = mk({ fromAddresses: ["n@shop.it"], subjectKeywords: ["spedizione"] });
+const k3 = mk({ fromAddresses: ["m@shop.it"], subjectKeywords: ["fattura"] });
+merged = mergeDuplicateRules([k1, k2, k3]);
+assert.equal(merged.rules.length, 2, "different senders and keywords stay apart");
+assert.deepEqual(merged.rules.find((r) => r.fromAddresses[0] === "n@shop.it").subjectKeywords, ["ordine", "spedizione"]);
+const disabledGh = { ...gh2, status: "disabled" };
+assert.equal(mergeDuplicateRules([gh1, disabledGh]).rules.length, 2, "a rule the user switched off is never absorbed");
+const otherCategory = mk({ fromAddresses: ["c@z.it"], category: "Newsletter" });
+assert.equal(mergeDuplicateRules([{ ...spam1, category: "Spam" }, otherCategory]).rules.length, 2, "senders join only within one category");
+assert.equal(mergeDuplicateRules([k1, mk({ action: "archive", fromAddresses: ["n@shop.it"], subjectKeywords: ["ordine"] })]).rules.length, 2, "different action");
+
 console.log("all rule tests passed");

@@ -8,7 +8,7 @@
 
 import { folderKind, iterateMessages, listAccounts, listFolders, listTags } from "./mail.js";
 import { structuredCall } from "./llm.js";
-import { normalizeRule, ruleId, ruleStats, toObservation } from "./rules.js";
+import { mergeDuplicateRules, normalizeRule, ruleId, ruleStats, toObservation } from "./rules.js";
 import { accountEnabled, aiEnabled, save, state } from "./state.js";
 
 const SCANNED_KINDS = new Set(["inbox", "trash", "archives", "normal"]);
@@ -190,8 +190,9 @@ export async function learnRules() {
     upsertRule(rule, stats, autoActivate && (rule.action !== "delete" || autoActivateDelete));
     accepted++;
   }
+  const merged = mergeRulesInState();
   refreshRuleStats();
-  state.meta.lastLearn = { at: Date.now(), accepted, rejected };
+  state.meta.lastLearn = { at: Date.now(), accepted, rejected, ...(merged ? { note: `${merged} regole doppie unite` } : {}) };
   save("rules", "meta");
 }
 
@@ -211,6 +212,20 @@ function upsertRule(rule, stats, activate) {
     applied: 0,
     reverts: 0,
   });
+}
+
+// Merges duplicate rules in place, points the activity log at the merged
+// rules and rescores them. Returns how many rules were removed.
+export function mergeRulesInState() {
+  const before = state.rules.length;
+  const { rules, remap } = mergeDuplicateRules(state.rules);
+  if (rules.length === before) return 0;
+  const observations = Object.values(state.observations);
+  for (const rule of rules) Object.assign(rule, ruleStats(rule, observations));
+  state.rules = rules;
+  for (const entry of state.log) if (remap[entry.ruleId]) entry.ruleId = remap[entry.ruleId];
+  save("rules", "log");
+  return before - rules.length;
 }
 
 export function refreshRuleStats() {

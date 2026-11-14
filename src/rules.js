@@ -120,3 +120,72 @@ export function pickRules(rules, facts, currentTags = []) {
   const tagRules = matching.filter((r) => r.action === "tag" && !seen.has(r.tagKey) && seen.add(r.tagKey));
   return { folderRule, tagRules };
 }
+
+// Duplicate rules: same action, account, folder or tag. Two rules A and B are
+// merged only when "A or B" can be written as one rule:
+// - B is covered by A (A takes any subject from a superset of B's senders):
+//   B is dropped. Also when A is active and B only proposed;
+// - same status and same senders: the subject keywords join (none = any subject);
+// - same status, same keywords and same category: the senders join.
+// Returns the merged list and old id -> new id.
+export function mergeDuplicateRules(rules) {
+  const sameTarget = (a, b) =>
+    a.action === b.action && a.accountId === b.accountId && a.folderPath === b.folderPath &&
+    a.tagKey === b.tagKey;
+  const senders = (r) => [...r.fromAddresses.map((a) => "a:" + a), ...r.fromDomains.map((d) => "d:" + d)];
+  const sameList = (x, y) => x.length === y.length && x.every((v, i) => v === y[i]);
+  const covers = (a, b) => !a.subjectKeywords.length && senders(b).every((s) => senders(a).includes(s));
+
+  const union = (x, y) => [...new Set([...x, ...y])].sort();
+  function combine(a, b) {
+    const keepA = (a.support || 0) >= (b.support || 0);
+    const sameStatus = a.status === b.status;
+    const canDrop = (big, small) => covers(big, small) && (sameStatus || (big.status === "active" && small.status === "proposed"));
+    let merged;
+    if (canDrop(a, b)) merged = { ...a };
+    else if (canDrop(b, a)) merged = { ...b };
+    else if (!sameStatus) return null;
+    else if (sameList(senders(a), senders(b))) {
+      merged = { ...a, subjectKeywords: a.subjectKeywords.length && b.subjectKeywords.length ? union(a.subjectKeywords, b.subjectKeywords) : [] };
+    } else if (sameList(a.subjectKeywords, b.subjectKeywords) && a.category === b.category) {
+      merged = { ...a, fromAddresses: union(a.fromAddresses, b.fromAddresses), fromDomains: union(a.fromDomains, b.fromDomains) };
+    } else return null;
+    // A dropped rule keeps the description of the rule that covers it.
+    const main = merged.id === a.id ? a : merged.id === b.id ? b : keepA ? a : b;
+    return {
+      ...merged,
+      description: main.description,
+      category: main.category,
+      createdAt: Math.min(a.createdAt || Date.now(), b.createdAt || Date.now()),
+      applied: (a.applied || 0) + (b.applied || 0),
+      reverts: (a.reverts || 0) + (b.reverts || 0),
+    };
+  }
+
+  const remap = {};
+  let list = [...rules];
+  for (let changed = true; changed; ) {
+    changed = false;
+    outer: for (let i = 0; i < list.length; i++) {
+      for (let j = i + 1; j < list.length; j++) {
+        if (!sameTarget(list[i], list[j])) continue;
+        const merged = combine(list[i], list[j]);
+        if (!merged) continue;
+        merged.id = ruleId(merged);
+        // Never two rules with one id (it would collide with a rule in another status).
+        if (list.some((r, k) => k !== i && k !== j && r.id === merged.id)) continue;
+        for (const old of [list[i].id, list[j].id]) remap[old] = merged.id;
+        list = [...list.slice(0, i), merged, ...list.slice(i + 1, j), ...list.slice(j + 1)];
+        changed = true;
+        break outer;
+      }
+    }
+  }
+  // Ids merged twice point to the final rule.
+  for (const old of Object.keys(remap)) {
+    let id = remap[old];
+    while (remap[id] && remap[id] !== id) id = remap[id];
+    remap[old] = id;
+  }
+  return { rules: list, remap };
+}
